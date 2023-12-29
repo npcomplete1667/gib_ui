@@ -66,7 +66,7 @@ function TipSetup() {
 
     function getCleanedURL() {
         return Util.cleanStringForURL(
-            `${process.env.NEXT_PUBLIC_URL}/${state.username}`
+            `${process.env.NEXT_PUBLIC_URL}/user/${state.username}`
         );
     }
 

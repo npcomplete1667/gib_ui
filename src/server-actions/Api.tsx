@@ -1,6 +1,12 @@
 import { toast } from "sonner";
 import translateError from "@/utils/errorTranslation";
 
+enum TransactionType{
+    Tip = "Tip",
+    Transfer = "Transfer",
+    Request = "Request"
+}
+
 async function get(tail: string) {
     let url = process.env.NEXT_PUBLIC_API_URL + tail;
 
@@ -43,6 +49,42 @@ async function saveUser(
     }
 }
 
+async function saveTransaction(
+    txn_hash:string,
+    from_wallet:string,
+    to_username:string,
+    type:TransactionType,
+    description:string,
+    amount:number
+): Promise<boolean> {
+    let url = process.env.NEXT_PUBLIC_API_URL + "/save-transaction";
+    console.log(url);
+
+    const response: Response = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            txn_hash:txn_hash,
+            from_wallet:from_wallet,
+            to_username:to_username,
+            type:type,
+            description:description,
+            amount:amount
+        }),
+    })
+
+    if (response.ok) {
+        console.log("Transaction " , txn_hash, " saved successfully")
+        return true;
+    } else {
+        const data = await response.json();
+        toast.error(translateError(data.message));
+        return false;
+    }
+}
+
 
 async function createSolTransferTransaction(
     from_wallet: string,
@@ -66,7 +108,6 @@ async function createSolTransferTransaction(
     })
 
     const data = await response.json();
-    console.log("THIS IS THE SPOIT", response.ok)
 
     if(response.ok){
         return data.message;
@@ -81,4 +122,6 @@ async function createSolTransferTransaction(
 export default {
     createSolTransferTransaction,
     saveUser,
+    saveTransaction,
+    TransactionType
 };

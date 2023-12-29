@@ -7,6 +7,7 @@ import SingleActionModal from "../../../components/Modals/SingleActionModal";
 
 //utils
 import Util from "../../../utils";
+import Api from "@/server-actions/Api";
 
 //assets
 import clipboardImage from "/public/images/copy.png";
@@ -23,16 +24,28 @@ import { useParams } from "next/navigation";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 import { toast } from "sonner";
+import Textbox from "@/components/Textbox";
 
 const tip_amounts = [0.1, 0.5, 1]; //sol];
 const tip_strings = ["0.1 ◎", "0.5 ◎", "1 ◎"];
 
 export default function TipScreen() {
-    const [amount, setAmount] = useState(1);
+    const [amountIdx, setAmountIdx] = useState(1);
     const urlParams = useParams<{ username: string }>();
     const username = urlParams.username;
     const { connected, publicKey } = useWallet();
     const { sendSol } = WalletConnection();
+    const [customAmount, setCustomAmount] = useState(tip_amounts[amountIdx].toString());
+
+    function handleTipAmountChange(value:number){
+        setAmountIdx(value)
+        setCustomAmount(tip_amounts[value].toString())
+    }
+
+    function handleCustomAmount(e:any){
+        const { value } = e.target;
+        setCustomAmount(Util.stringNumericOnly(value))
+    }
 
     async function sendTransactionHandler() {
         //check if connected wallet
@@ -40,10 +53,15 @@ export default function TipScreen() {
             toast.error("Wallet Not Connected");
             return;
         }
+        let tip_amount = tip_amounts[amountIdx]
+        if(customAmount !== ""){
+            tip_amount = parseFloat(customAmount)
+        }
 
-        const txnHash: string | undefined = await sendSol(
+        try{
+            const txnHash: string | undefined = await sendSol(
             username,
-            tip_amounts[amount]
+            tip_amount
         );
         if (txnHash) {
             toast.success(
@@ -58,12 +76,18 @@ export default function TipScreen() {
                     </a>
                 </div>
             );
+            Api.saveTransaction(txnHash,
+                publicKey!.toString(),
+                username,
+                Api.TransactionType.Tip,
+                `wallet: ${publicKey!.toString()} tips user: ${username}`,
+                tip_amounts[amountIdx]
+                )
         }
-
-        //check if username exists
-
-        //need to check if already exists in db
-        //need to save info to db
+        } catch(e:any) {
+            toast.error(e.message)
+        }
+        
     }
 
     // Route -> /shop/[tag]/[item]
@@ -91,17 +115,21 @@ export default function TipScreen() {
                                 options={tip_strings}
                                 orientation={"row"}
                                 select_color={"blue"}
-                                select_criteria={amount}
-                                handler={setAmount}
+                                select_criteria={amountIdx}
+                                handler={handleTipAmountChange}
                             />
 
-                            {/* <ButtonGroup
-                                options={["YES!!🤠", no_prompt[state.payDev]]}
-                                orientation={"col"}
-                                select_color={"blue"}
-                                select_criteria={state.payDev}
-                                handler={payDevChange}
-                            /> */}
+                            <div className="flex flex-row justify-center align-middle place-items-end">
+                                <Textbox
+                                label_text={`Custom Amount:`}
+                                input_name="custom_amount"
+                                value={customAmount}
+                                handler={handleCustomAmount}
+                                max_length={8}
+                            />
+                            <p className="py-3 px-1">◎</p>
+                            </div>
+                                
 
                             <div className="flex justify-center">
                                 <button

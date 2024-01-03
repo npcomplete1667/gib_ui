@@ -8,6 +8,7 @@ export default function Textbox({
     pattern,
     type = "text",
     max_length,
+    button,
     required = false,
 }: {
     label_text: string;
@@ -17,15 +18,18 @@ export default function Textbox({
     value: string | number;
     handler: any;
     pattern?: string;
-    type?:string;
+    type?: string;
     max_length?: number;
+    button?:any;
     required?: boolean;
 }) {
     return (
         <label className="mb-2 inline-block text-sm text-gray-800 dark:text-gray-400 sm:text-base">
-            {label_text}
-            <span className="text-red-500">{validator ? " *"+error_text : ""}</span>
-
+            {label_text}{" "}
+            <span className="text-red-500">
+                {validator ? " *" + error_text : ""}
+            </span>
+            {button}
             <input
                 name={input_name}
                 type={type}

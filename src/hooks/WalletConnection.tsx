@@ -1,5 +1,5 @@
 import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { Transaction } from "@solana/web3.js";
+import { Transaction, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import API from "../server-actions/Api";
 import { toast } from "sonner";
 
@@ -8,7 +8,10 @@ export const WalletConnection = () => {
     const { connection } = useConnection();
 
     // //Run the transaction
-    const sendSol = async (toUsername: string, amount: number) => {
+    const sendSol = async (
+        toUsername: string,
+        amount: number
+    ): Promise<string | undefined> => {
         if (!publicKey) {
             toast.error("Wallet Not Connected");
             return "";
@@ -28,7 +31,17 @@ export const WalletConnection = () => {
         }
     };
 
+    const getSolBalance = async (): Promise<number> => {
+        if (publicKey) {
+            let balance = await connection.getBalance(publicKey);
+            return balance / LAMPORTS_PER_SOL;
+        }
+        toast.error("Wallet not Connected");
+        return 0
+    };
+
     return {
         sendSol,
+        getSolBalance,
     };
 };

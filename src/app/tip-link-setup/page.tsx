@@ -1,14 +1,15 @@
 "use client";
 
 //components
-import Divider from "../../components/Divider";
+import Divider from "../../components/Layout/Divider";
 import ButtonGroup from "../../components/Buttons/ButtonGroup";
 import SingleActionModal from "../../components/Modals/SingleActionModal";
 import Textbox from "@/components/Textbox";
+import ObjectBg from "@/components/Layout/ObjectBg";
 import { toast } from "sonner";
 
 //utils
-import Util from "../../utils";
+import Util from "../../Util";
 import Api from "@/server-actions/Api";
 
 //assets
@@ -24,7 +25,6 @@ import Head from "next/head";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 import { TwitterShareButton, XIcon } from "react-share";
-
 
 const default_choices = {
     wallet_address: "",
@@ -45,12 +45,19 @@ function TipSetup() {
     const currencyDefaults = [0.5, 1, 3]; //sol];
 
     async function generateLinkClickedHandler() {
-        if(!Util.validateSolanaAddress(state.wallet_address)){
-            toast.error("Invalid Wallet Address Provided")
-            return
+        if (!Util.validateSolanaAddress(state.wallet_address)) {
+            toast.error("Invalid Wallet Address Provided");
+            return;
         }
-        
-        if (await Api.saveUser(state.username, state.wallet_address, publicKey !== null, state.payDev == 0)){
+
+        if (
+            await Api.saveUser(
+                state.username,
+                state.wallet_address,
+                publicKey !== null,
+                state.payDev == 0
+            )
+        ) {
             setShareLinkModalOpen(true);
         }
         //need to save info to db
@@ -123,7 +130,9 @@ function TipSetup() {
                             title="copyToClipboardButton"
                             type="button"
                             onClick={() => {
-                                Util.copyToClipboard(`https://${getCleanedURL()}`);
+                                Util.copyToClipboard(
+                                    `https://${getCleanedURL()}`
+                                );
                             }}
                         >
                             <LuClipboardCopy />
@@ -149,63 +158,58 @@ function TipSetup() {
                     <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 dark:text-gray-300 md:mb-8 lg:text-3xl">
                         Setup Your own Tip Link
                     </h2>
+                    <ObjectBg footer={`Link Preview: ${getCleanedURL()}`}>
+                        <div className="flex justify-center">
+                            <WalletMultiButton />
+                        </div>
 
-                    <div className="bg-objectBg mx-auto max-w-lg rounded-lg border dark:border-gray-700">
-                        <div className="flex flex-col gap-4 p-4 md:p-8">
-                            <div className="flex justify-center">
-                                <WalletMultiButton />
-                            </div>
+                        <Divider text={"or"} />
 
-                            <Divider text={"or"} />
+                        <Textbox
+                            label_text={`Copy/Paste your wallet address`}
+                            input_name="wallet_address"
+                            value={state.wallet_address}
+                            handler={handleChange}
+                            max_length={44}
+                            validator={
+                                !Util.validateSolanaAddress(
+                                    state.wallet_address
+                                ) && state.wallet_address != ""
+                            }
+                            error_text="Invalid Wallet Address"
+                        />
 
-                            <Textbox
-                                label_text={`Copy/Paste your wallet address`}
-                                input_name="wallet_address"
-                                value={state.wallet_address}
-                                handler={handleChange}
-                                max_length={44}
-                                validator={!Util.validateSolanaAddress(state.wallet_address) && state.wallet_address != ""}
-                                error_text="Invalid Wallet Address"
-                            />
+                        <Textbox
+                            label_text="Username"
+                            input_name="username"
+                            value={state.username}
+                            handler={handleUsernameChange}
+                            max_length={8}
+                        />
 
-                            <Textbox
-                                label_text="Username"
-                                input_name="username"
-                                value={state.username}
-                                handler={handleUsernameChange}
-                                max_length={8}
-                            />
+                        <Divider text={"gib 0.5% to dev?😃"} />
 
-                            <Divider text={"gib 0.5% to dev?😃"} />
+                        <ButtonGroup
+                            options={["YES!!🤠", no_prompt[state.payDev]]}
+                            orientation={"col"}
+                            select_color={"blue"}
+                            select_criteria={state.payDev}
+                            handler={payDevChange}
+                        />
 
-                            <ButtonGroup
-                                options={["YES!!🤠", no_prompt[state.payDev]]}
-                                orientation={"col"}
-                                select_color={"blue"}
-                                select_criteria={state.payDev}
-                                handler={payDevChange}
-                            />
-
-                            <div className="flex justify-center">
-                                <button
-                                    className={` block w-1/2 rounded-lg bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-500 px-8 py-3 text-center text-sm font-semibold text-white
+                        <div className="flex justify-center">
+                            <button
+                                className={` block w-1/2 rounded-lg bg-gradient-to-r from-indigo-500 via-sky-500 to-emerald-500 px-8 py-3 text-center text-sm font-semibold text-white
                                         outline-none ring-gray-300 
                                         transition duration-100 hover:from-indigo-400 hover:via-sky-400
                                         hover:to-emerald-400 focus-visible:ring md:text-base                  
                                         `}
-                                    onClick={() => generateLinkClickedHandler()}
-                                >
-                                    Generate Link🚀
-                                </button>
-                            </div>
+                                onClick={() => generateLinkClickedHandler()}
+                            >
+                                Generate Link🚀
+                            </button>
                         </div>
-
-                        <div className="flex items-center justify-center bg-gray-200 dark:dark:bg-white/5 p-4">
-                            <p className="text-center text-sm text-gray-500">
-                                Link Preview: {getCleanedURL()}
-                            </p>
-                        </div>
-                    </div>
+                    </ObjectBg>
                 </div>
             </div>
         </div>

@@ -1,10 +1,11 @@
 import { toast } from "sonner";
-import translateError from "@/utils/errorTranslation";
+import translateError from "@/Util/errorTranslation";
+import Util from "@/Util";
 
-enum TransactionType{
+enum TransactionType {
     Tip = "Tip",
     Transfer = "Transfer",
-    Request = "Request"
+    Request = "Request",
 }
 
 async function get(tail: string) {
@@ -23,8 +24,8 @@ async function saveUser(
     verified: boolean,
     pay_dev: boolean
 ): Promise<boolean> {
+    console.log("API saveUser called");
     let url = process.env.NEXT_PUBLIC_API_URL + "/save-user";
-    console.log(url);
 
     const response: Response = await fetch(url, {
         method: "POST",
@@ -37,7 +38,7 @@ async function saveUser(
             verified: verified,
             pay_dev: pay_dev,
         }),
-    })
+    });
 
     if (response.ok) {
         toast.success("Link created successfully");
@@ -50,15 +51,15 @@ async function saveUser(
 }
 
 async function saveTransaction(
-    txn_hash:string,
-    from_wallet:string,
-    to_username:string,
-    type:TransactionType,
-    description:string,
-    amount:number
+    txn_hash: string,
+    txn_type: TransactionType,
+    from_wallet: string,
+    to_username: string,
+    description: string,
+    token_account: string,
+    amount: number
 ): Promise<boolean> {
     let url = process.env.NEXT_PUBLIC_API_URL + "/save-transaction";
-    console.log(url);
 
     const response: Response = await fetch(url, {
         method: "POST",
@@ -66,17 +67,18 @@ async function saveTransaction(
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            txn_hash:txn_hash,
-            from_wallet:from_wallet,
-            to_username:to_username,
-            type:type,
-            description:description,
-            amount:amount
+            txn_hash: txn_hash,
+            txn_type: txn_type,
+            from_wallet: from_wallet,
+            to_username: to_username,
+            description: description,
+            token_account: token_account,
+            amount: amount,
         }),
-    })
+    });
 
     if (response.ok) {
-        console.log("Transaction " , txn_hash, " saved successfully")
+        console.log("Transaction ", txn_hash, " saved successfully");
         return true;
     } else {
         const data = await response.json();
@@ -85,7 +87,6 @@ async function saveTransaction(
     }
 }
 
-
 async function createSolTransferTransaction(
     from_wallet: string,
     to_username: string,
@@ -93,7 +94,6 @@ async function createSolTransferTransaction(
 ) {
     let url =
         process.env.NEXT_PUBLIC_API_URL + "/create-sol-transfer-transaction";
-    console.log(url);
 
     const response: any = await fetch(url, {
         method: "POST",
@@ -105,11 +105,11 @@ async function createSolTransferTransaction(
             to_username: to_username,
             amount: amount,
         }),
-    })
+    });
 
     const data = await response.json();
 
-    if(response.ok){
+    if (response.ok) {
         return data.message;
     } else {
         console.log(data.message);
@@ -117,11 +117,108 @@ async function createSolTransferTransaction(
     }
 }
 
+async function getTopSingleTransactions(
+    to_username: string,
+    txn_type: string,
+    limit: number
+): Promise<any[][]> {
+    let url = process.env.NEXT_PUBLIC_API_URL + "/get-top-single-transactions";
 
+    const response: any = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            to_username: to_username,
+            txn_type: txn_type,
+            limit: limit,
+        }),
+    });
+
+    const data = await response.json();
+    let res = [];
+
+    if (response.ok) {
+        for (let i = 0; i < data.message.length; i++) {
+            const [txn_hash, from_account, username, usd_amount] =
+                data.message[i];
+            console.log(txn_hash, from_account, username, usd_amount);
+
+            res.push([
+                <a
+                    href={Util.solscanUrl(Util.SolscanType.tx, txn_hash)}
+                    target="_blank"
+                    className="text-decoration-line: underline"
+                >
+                    {Util.truncate(username ? username : from_account)}
+                </a>,
+                usd_amount,
+            ]);
+        }
+    } else {
+        console.log(data.message);
+        toast.error(data.message);
+    }
+    console.log("getTopSingleTransactions result=", res);
+    return res;
+}
+
+async function getTopTotalTransactions(
+    to_username: string,
+    txn_type: string,
+    limit: number
+) {
+    let url = process.env.NEXT_PUBLIC_API_URL + "/get-top-total-transactions";
+
+    const response: any = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            to_username: to_username,
+            txn_type: txn_type,
+            limit: limit,
+        }),
+    });
+
+    const data = await response.json();
+    let res = [];
+
+    if (response.ok) {
+        console.log("getTopTotalTransactions data.message=", data.message);
+
+        for (let i = 0; i < data.message.length; i++) {
+            const [from_account, username, total_usd_amount] = data.message[i];
+
+            res.push([
+                <a
+                    href={Util.solscanUrl(
+                        Util.SolscanType.account,
+                        from_account
+                    )}
+                    target="_blank"
+                    className="text-decoration-line: underline"
+                >
+                    {Util.truncate(username ? username : from_account)}
+                </a>,
+                total_usd_amount,
+            ]);
+        }
+    } else {
+        console.log(data.message);
+        toast.error(data.message);
+    }
+    console.log("getTopTotalTransactions result=", res);
+    return res;
+}
 
 export default {
     createSolTransferTransaction,
     saveUser,
     saveTransaction,
-    TransactionType
+    getTopSingleTransactions,
+    getTopTotalTransactions,
+    TransactionType,
 };

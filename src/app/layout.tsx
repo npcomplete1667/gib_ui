@@ -3,8 +3,11 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import dynamic from "next/dynamic";
 import { ThemeProvider } from "../context/ThemeProvider";
-import { ThemeSwitcher } from "../components/Buttons/ThemeSwitcher";
 import { Toaster } from "sonner";
+import Util from "@/Util";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
 
 const WalletConnectionProvider = dynamic(
     () => import("../context/WalletConnectionProvider"),
@@ -15,10 +18,10 @@ const WalletConnectionProvider = dynamic(
 
 const inter = Inter({ subsets: ["latin"] });
 
-export const metadata: Metadata = {
-    title: "Tip",
-    description: "Tip with a link",
-};
+// export const metadata: Metadata = {
+//     title: "gib",
+//     description: "Tip with a link",
+// };
 
 export default function RootLayout({
     children,
@@ -27,17 +30,15 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <link
-                rel="icon"
-                href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🤑</text></svg>"
-            />
-            <body className={`${inter.className} bg-siteBg duration-200`}>
+            <link rel="icon" href={Util.getEmojiHref("💸")} />
+            <body
+                className={`${inter.className} bg-siteBg duration-200 flex flex-col min-h-screen`}
+            >
                 <ThemeProvider
                     attribute="class"
                     defaultTheme="system"
                     enableSystem
                 >
-                    <ThemeSwitcher />
                     <Toaster
                         richColors
                         // theme={theme == "light" ? "light" : "dark"}
@@ -46,8 +47,10 @@ export default function RootLayout({
                     />
 
                     <WalletConnectionProvider>
+                        <Header />
                         {children}
                     </WalletConnectionProvider>
+                    <Footer />
                 </ThemeProvider>
             </body>
         </html>

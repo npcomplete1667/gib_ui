@@ -17,7 +17,7 @@ export const ThemeSwitcher = () => {
     }
 
     return (
-        <div className=" absolute right-5 top-2 p-1 w-16 h-8 flex items-center dark:bg-gray-600 bg-teal-500 cursor-pointer rounded-full"
+        <div className=" p-1 w-16 h-8 flex items-center dark:bg-gray-600 bg-teal-500 cursor-pointer rounded-full"
         onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
 
             <FaMoon className="text-white" size={18} />

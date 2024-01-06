@@ -214,8 +214,39 @@ async function getTopTotalTransactions(
     return res;
 }
 
+
+async function getUsernameFromPubkey(
+    pubkey: string
+) {
+    let url =
+        process.env.NEXT_PUBLIC_API_URL + "/get-username-from-pubkey";
+
+    const response: any = await fetch(url, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+            pubkey: pubkey
+        }),
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+        return data.message;
+    } else {
+        console.log(data.message);
+        toast.error(data.message);
+    }
+}
+
+
+
+
 export default {
     createSolTransferTransaction,
+    getUsernameFromPubkey,
     saveUser,
     saveTransaction,
     getTopSingleTransactions,

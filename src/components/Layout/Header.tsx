@@ -17,9 +17,9 @@ import {
     PlayCircleIcon,
 } from "@heroicons/react/20/solid";
 import Util from "@/Util";
-import { ThemeSwitcher } from "./Buttons/ThemeSwitcher";
+import { ThemeSwitcher } from "../Buttons/ThemeSwitcher";
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import Divider from "./Layout/Divider";
+import Divider from "./Divider";
 
 const products = [
     {
@@ -182,17 +182,17 @@ export default function Header() {
                     </Popover> */}
 
                     <a
-                        href="#"
-                        className="text-sm font-semibold leading-6 text-gray-900"
+                        href={`${process.env.NEXT_PUBLIC_URL}/tip-link-setup`}
+                        className="text-sm font-semibold leading-6 mainTextColor"
                     >
-                        Features
+                        Tip Link Setup
                     </a>
-                    <a
+                    {/* <a
                         href="#"
-                        className="text-sm font-semibold leading-6 text-gray-900"
+                        className="text-sm font-semibold leading-6 mainTextColor"
                     >
                         Marketplace
-                    </a>
+                    </a> */}
 
                     {/* <Popover className="relative">
                         <Popover.Button className="flex items-center gap-x-1 text-sm font-semibold leading-6 text-gray-900">
@@ -297,20 +297,20 @@ export default function Header() {
                                         </a>
                                     ))}
                                 </div> */}
-                                {/* <div className="space-y-2 py-6">
+                                <div className="space-y-2 py-6">
                                     <a
-                                        href="#"
-                                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
+                                        href={`${process.env.NEXT_PUBLIC_URL}/tip-link-setup`}
+                                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 mainTextColor hover:bg-gray-100 dark:hover:bg-gray-800"
                                     >
-                                        Features
+                                        Tip Link Setup
                                     </a>
-                                    <a
+                                    {/* <a
                                         href="#"
                                         className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"
                                     >
                                         Marketplace
-                                    </a>
-
+                                    </a> */}
+                                    {/* 
                                     {company.map((item) => (
                                         <a
                                             key={item.name}
@@ -319,8 +319,8 @@ export default function Header() {
                                         >
                                             {item.name}
                                         </a>
-                                    ))}
-                                </div> */}
+                                    ))} */}
+                                </div>
                                 <div className="py-6">
                                     {/* <a
                                         href="#"

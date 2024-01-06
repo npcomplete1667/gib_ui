@@ -72,9 +72,7 @@ function TipSetup() {
     }
 
     function getCleanedURL() {
-        return Util.cleanStringForURL(
-            `${process.env.NEXT_PUBLIC_URL}/user/${state.username}`
-        );
+        return `${process.env.NEXT_PUBLIC_URL}/user/` + Util.cleanStringForURL(state.username);
     }
 
     function handleUsernameChange(e: any) {
@@ -166,7 +164,7 @@ function TipSetup() {
                         <Divider text={"or"} />
 
                         <Textbox
-                            label_text={`Copy/Paste your wallet address`}
+                            label={`Copy/Paste your wallet address`}
                             input_name="wallet_address"
                             value={state.wallet_address}
                             handler={handleChange}
@@ -180,7 +178,7 @@ function TipSetup() {
                         />
 
                         <Textbox
-                            label_text="Username"
+                            label="Username"
                             input_name="username"
                             value={state.username}
                             handler={handleUsernameChange}

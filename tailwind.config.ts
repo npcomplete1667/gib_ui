@@ -11,6 +11,8 @@ const config: Config = {
       colors:{
           siteBg:"rgb(var(--bg-color) / <alpha-value>)",
           objectBg:"rgb(var(--object-bg-color) / <alpha-value>)",
+          mainTextColor:"rgb(var(--main-text-color) / <alpha-value>)",
+
       }
     },
   },

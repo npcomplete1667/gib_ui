@@ -11,7 +11,7 @@ import Util from "../../../Util";
 import Api from "@/server-actions/Api";
 
 //assets
-import clipboardImage from "/public/images/copy.png";
+import { IoMdInformationCircleOutline } from "react-icons/io";
 
 //solana
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
@@ -21,7 +21,9 @@ import { useConnection, useWallet } from "@solana/wallet-adapter-react";
 //React/Next
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import Head from "next/head"
+import Head from "next/head";
+import Image from "next/image";
+import { Tooltip } from "@geist-ui/core";
 
 require("@solana/wallet-adapter-react-ui/styles.css");
 import { toast } from "sonner";
@@ -39,6 +41,7 @@ export default function TipScreen() {
     const to_username = urlParams.to_username;
     const { connected, publicKey } = useWallet();
     const { sendSol, getSolBalance } = WalletConnection();
+    const [disableTextbox, setDisableTextbox] = useState(false);
 
     const [customAmount, setCustomAmount] = useState(
         tip_amounts[amountIdx].toString()
@@ -48,33 +51,38 @@ export default function TipScreen() {
         useState<any[][]>();
     const [topTotalTransactions, setTopTotalTransactions] = useState<any[][]>();
 
-    const getTopSingleTransactions = async () => {
-        const result: any[][] = await Api.getTopSingleTransactions(
+    const updateLeaderboards = async () => {
+        Api.getTopSingleTransactions(
             to_username,
             Api.TransactionType.Tip,
             leaderboard_size
-        );
-        setTopSingleTransactions(result);
-    };
+        ).then((result) => {
+            setTopSingleTransactions(result);
+        });
 
-    const getTopTotalTransactions = async () => {
-        const result: any[][] = await Api.getTopTotalTransactions(
+        Api.getTopTotalTransactions(
             to_username,
             Api.TransactionType.Tip,
             leaderboard_size
-        );
-        setTopTotalTransactions(result);
+        ).then((result) => {
+            setTopTotalTransactions(result);
+        });
     };
 
     useEffect(() => {
-        getTopSingleTransactions();
-        getTopTotalTransactions();
-    }, []);
-
-    function handleTipAmountChange(value: number) {
-        setAmountIdx(value);
-        setCustomAmount(tip_amounts[value].toString());
-    }
+        updateLeaderboards();
+        if (connected) {
+            Api.getUsernameFromPubkey(publicKey!.toString()).then((result) => {
+                setFromUsername(result);
+                if (result != "") {
+                    setDisableTextbox(true);
+                }
+            });
+        } else {
+            setFromUsername("");
+            setDisableTextbox(false);
+        }
+    }, [connected]);
 
     function handleUsernameChange(e: any) {
         const { value } = e.target;
@@ -88,11 +96,11 @@ export default function TipScreen() {
 
     async function handleMaxButtonClick() {
         const wallet_balance: number = await getSolBalance();
-        let max_amount = (wallet_balance - 0.1).toFixed(2);
         if (wallet_balance > 0.1) {
+            const max_amount = (wallet_balance - 0.1).toFixed(2);
             setCustomAmount(max_amount.toString());
         } else {
-            setCustomAmount("0");
+            setCustomAmount(tip_amounts[amountIdx].toString());
         }
     }
 
@@ -131,6 +139,7 @@ export default function TipScreen() {
                         true
                     );
                 }
+                updateLeaderboards();
             }
         } catch (e: any) {
             toast.error(e.message);
@@ -144,8 +153,13 @@ export default function TipScreen() {
     return (
         <div>
             <Head>
-  <title>Your page title</title>
-</Head>
+                <title>Contact - TitleMetaNextjs</title>
+                <meta
+                    name="description"
+                    content="Meta description for the Contact page"
+                />
+            </Head>
+
             <div className={"py-6 sm:py-8 lg:py-12"}>
                 <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
                     <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 dark:text-gray-300 md:mb-8 lg:text-3xl">
@@ -156,12 +170,26 @@ export default function TipScreen() {
                         <div className="flex justify-center">
                             <WalletMultiButton />
                         </div>
+
                         <Textbox
-                            label_text="Username (*Optional)"
+                            label={
+                                <div className="flex space-x-1 items-center">
+                                    <p>Username</p>
+                                    <Tooltip
+                                        text={
+                                            "Add a username to make your own tip link"
+                                        }
+                                        placement="right"
+                                    >
+                                        <IoMdInformationCircleOutline className='h-5 w-5'/>
+                                    </Tooltip>
+                                </div>
+                            }
                             input_name="username"
                             value={from_username}
                             handler={handleUsernameChange}
                             max_length={8}
+                            disabled={disableTextbox}
                         />
 
                         <Divider text={"Choose tip amount"} />
@@ -172,12 +200,15 @@ export default function TipScreen() {
                             orientation={"row"}
                             select_color={"blue"}
                             select_criteria={amountIdx}
-                            handler={handleTipAmountChange}
+                            handler={(value: any) => {
+                                setAmountIdx(value);
+                                setCustomAmount(tip_amounts[value].toString());
+                            }}
                         />
 
                         <div className="flex flex-row justify-center align-middle place-items-end">
                             <Textbox
-                                label_text={`Custom Amount:`}
+                                label={`Custom Amount:`}
                                 input_name="custom_amount"
                                 value={customAmount}
                                 handler={handleCustomAmount}
@@ -209,7 +240,7 @@ export default function TipScreen() {
                         </div>
                     </ObjectBg>
 
-                    <h2 className="text-center mt-14">
+                    <h2 className="text-center text-lg mt-14">
                         {to_username}'s Largest Tippers (USD)
                     </h2>
                     <div className="flex flex-row grid-cols-3 mx-auto w-full max-w-2xl text-center">

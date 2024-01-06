@@ -6,11 +6,13 @@
   :root[class="light"] {
     --bg-color: 255 255 255;
     --object-bg-color: 249 250 251;
+    --main-text-color: 31 41 55; /*gray-800*/
   }
 
   :root[class="dark"] {
     --bg-color: 0 0 0;
     --object-bg-color: 17 24 39;
+    --main-text-color: 156 163 175; /*gray-400*/
   }
 
 }

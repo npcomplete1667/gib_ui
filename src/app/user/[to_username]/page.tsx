@@ -241,7 +241,7 @@ export default function TipScreen() {
                     </ObjectBg>
 
                     <h2 className="text-center text-lg mt-14">
-                        {to_username}'s Largest Tippers (USD)
+                        {to_username}&apos;s Largest Tippers (USD)
                     </h2>
                     <div className="flex flex-row grid-cols-3 mx-auto w-full max-w-2xl text-center">
                         <Leaderboard

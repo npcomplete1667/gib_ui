@@ -1,6 +1,6 @@
 function ErrorPage() {
     return (
-        <div className={"bg-siteBg py-6 sm:py-8 lg:py-12"}>
+        <div className={"bg-transparent py-6 sm:py-8 lg:py-12"}>
             <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
                 <div className="relative mx-auto flex h-96 w-full items-center justify-center overflow-hidden rounded-lg bg-gray-100 shadow-lg sm:w-96">
                     <img

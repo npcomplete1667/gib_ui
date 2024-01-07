@@ -147,6 +147,7 @@ async function getTopSingleTransactions(
 
             res.push([
                 <a
+                    key={txn_hash}
                     href={Util.solscanUrl(Util.SolscanType.tx, txn_hash)}
                     target="_blank"
                     className="text-decoration-line: underline"
@@ -194,6 +195,7 @@ async function getTopTotalTransactions(
 
             res.push([
                 <a
+                    key={from_account}
                     href={Util.solscanUrl(
                         Util.SolscanType.account,
                         from_account
@@ -214,12 +216,8 @@ async function getTopTotalTransactions(
     return res;
 }
 
-
-async function getUsernameFromPubkey(
-    pubkey: string
-) {
-    let url =
-        process.env.NEXT_PUBLIC_API_URL + "/get-username-from-pubkey";
+async function getUsernameFromPubkey(pubkey: string) {
+    let url = process.env.NEXT_PUBLIC_API_URL + "/get-username-from-pubkey";
 
     const response: any = await fetch(url, {
         method: "POST",
@@ -227,7 +225,7 @@ async function getUsernameFromPubkey(
             "Content-Type": "application/json",
         },
         body: JSON.stringify({
-            pubkey: pubkey
+            pubkey: pubkey,
         }),
     });
 
@@ -240,9 +238,6 @@ async function getUsernameFromPubkey(
         toast.error(data.message);
     }
 }
-
-
-
 
 export default {
     createSolTransferTransaction,

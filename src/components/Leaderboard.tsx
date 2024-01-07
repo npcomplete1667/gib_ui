@@ -17,7 +17,7 @@ function Leaderboard({ title, items }: { title: string; items?: any[][] }) {
                 <ol>
                     {items.map((value, index) => {
                         return (
-                            <li>
+                            <li key={index}>
                                 <div className="grid grid-cols-12 text-start p-1">
                                     <div className="col-span-1">
                                         {index + 1}.

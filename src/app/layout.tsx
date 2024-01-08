@@ -17,10 +17,10 @@ const WalletConnectionProvider = dynamic(
 
 const inter = Inter({ subsets: ["latin"] });
 
-// export const metadata: Metadata = {
-//     title: "gib",
-//     description: "Tip with a link",
-// };
+export const metadata: Metadata = {
+    title: "gib",
+    description: "Tip with a link",
+};
 
 export default function RootLayout({
     children,

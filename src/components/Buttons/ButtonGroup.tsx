@@ -6,32 +6,67 @@ import GenericButton from "./GenericButton";
  * select_color: tailwind color
  */
 
+function classNames(...classes) {
+    return classes.filter(Boolean).join(" ");
+}
+
 function ButtonGroup({
     options,
-    orientation,
-    select_color,
-    select_criteria,
+    selected,
     handler,
 }: {
     options: any[];
-    orientation: string;
-    select_color: string;
-    select_criteria: any;
+    selected: any;
     handler: any;
 }) {
     return (
-        <div className={`flex flex-${orientation} justify-center`}>
+        <div className={`isolate inline-flex rounded-md shadow-sm`}>
             {options.map((text, index) => {
-                return (
-                    <GenericButton
-                        key={index}
-                        id={index}
-                        text={text}
-                        color={select_color}
-                        isSelected={index == select_criteria}
-                        handler={handler}
-                    />
-                );
+                if (index == 0) {
+                    //beginning item
+                    return (
+                        <button
+                            type="button"
+                            onClick={() => handler(index)}
+                            className={classNames(
+                                selected == index ? 
+                                "bg-gray-100 dark:bg-white/10" : 
+                                "bg-white dark:bg-black",
+                                "relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10")}
+                        >
+                            {text}
+                        </button>
+                    );
+                } else if (index == options.length - 1) {
+                    // end item
+                    return (
+                        <button
+                            type="button"
+                            onClick={() => handler(index)}
+                            className={classNames(
+                                selected == index ? 
+                                "bg-gray-150 dark: dark:bg-white/10" : "bg-white dark:bg-black",
+                                "relative -ml-px inline-flex items-center rounded-r-md  px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10")}
+                        >
+                            {text}
+                        </button>
+                    );
+                } else {
+                    //middle items
+                    return (
+                        <button
+                            type="button"
+                            onClick={() => handler(index)}
+                            className={classNames(
+                                selected == index ? 
+                                "bg-gray-100 dark:bg-white/10" : 
+                                "bg-white dark:bg-black",
+                                "relative -ml-px inline-flex items-center px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10")}
+                        >
+                            {text}
+                        </button>
+                    );
+                }
             })}
         </div>
     );

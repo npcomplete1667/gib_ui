@@ -1,13 +1,19 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
-import "./globals.css";
+import "../globals.css";
 import dynamic from "next/dynamic";
-import { ThemeProvider } from "../context/ThemeProvider";
+
 import { Toaster } from "sonner";
 import Util from "@/Util";
 import Header from "@/components/Layout/Header";
 import Footer from "@/components/Layout/Footer";
+require("@solana/wallet-adapter-react-ui/styles.css");
 
+//Themes
+import { ThemeProvider } from "../context/ThemeProvider";
+import { NextAuthProvider } from "@/context/NextAuthProvider";
+import { AccountContextProvider } from "@/context/AccountContext";
+import { SocialAccountContextProvider } from "@/context/SocialAccountContext";
 const WalletConnectionProvider = dynamic(
     () => import("../context/WalletConnectionProvider"),
     {
@@ -45,11 +51,17 @@ export default function RootLayout({
                         closeButton
                     />
 
-                    <WalletConnectionProvider>
-                        <Header />
-                        {children}
-                    </WalletConnectionProvider>
-                    <Footer />
+                    <NextAuthProvider>
+                        <WalletConnectionProvider>
+                            <AccountContextProvider>
+                                <SocialAccountContextProvider>
+                                    <Header />
+                                    {children}
+                                    <Footer />
+                                </SocialAccountContextProvider>
+                            </AccountContextProvider>
+                        </WalletConnectionProvider>
+                    </NextAuthProvider>
                 </ThemeProvider>
             </body>
         </html>

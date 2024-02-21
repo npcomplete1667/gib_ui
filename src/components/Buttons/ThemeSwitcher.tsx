@@ -4,7 +4,7 @@ import { useTheme } from "next-themes";
 import { FaMoon } from "react-icons/fa";
 import { BsSunFill } from "react-icons/bs";
 
-export const ThemeSwitcher = () => {
+export default function ThemeSwitcher()  {
     const [mounted, setMounted] = useState(false);
     const { theme, setTheme } = useTheme();
 

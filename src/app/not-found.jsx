@@ -1,3 +1,6 @@
+require("@solana/wallet-adapter-react-ui/styles.css");
+import "../globals.css";
+
 function ErrorPage() {
     return (
         <div className={"bg-transparent py-6 sm:py-8 lg:py-12"}>
@@ -20,7 +23,7 @@ function ErrorPage() {
                         </p>
 
                         <a
-                            href={`${process.env.NEXT_PUBLIC_URL}/tip-link-setup`}
+                            href={`${typeof window !== "undefined" ? window.location.origin : "https://gib.ing"}/tip-link-setup`}
                             className="inline-block rounded-lg bg-gray-200 px-8 py-3 text-center text-sm font-semibold text-gray-500 outline-none ring-indigo-300 transition duration-100 hover:bg-gray-300 focus-visible:ring active:text-gray-700 md:text-base"
                         >
                             Go home

@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 import { Dialog, Popover, Transition } from "@headlessui/react";
 import {
     ArrowPathIcon,
@@ -16,10 +16,43 @@ import {
     PhoneIcon,
     PlayCircleIcon,
 } from "@heroicons/react/20/solid";
+
+//Util
 import Util from "@/Util";
-import { ThemeSwitcher } from "../Buttons/ThemeSwitcher";
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import Api from "@/server-actions/Api";
+
+//components
 import Divider from "./Divider";
+
+//Context
+import { ThemeSwitcher } from "../Buttons";
+
+//Style
+require("@solana/wallet-adapter-react-ui/styles.css");
+
+// Solana
+import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
+import { useWallet } from "@solana/wallet-adapter-react";
+import {
+    useAccountContext
+} from "@/context/AccountContext";
+import { useSocialAccountContext } from "@/context/SocialAccountContext";
+import { toast } from "sonner";
+
+const links = [
+    {
+        title: "Tip Link Setup",
+        href: "tip-link-setup",
+    },
+    {
+        title: "Request",
+        href: "request",
+    },
+    {
+        title: "My Profile",
+        href: "profile",
+    },
+];
 
 const products = [
     {
@@ -85,7 +118,79 @@ const company = [
 ];
 
 export default function Header() {
+    const { publicKey, connected: walletConnected } = useWallet();
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const {account, setAccount} = useAccountContext();
+
+    const {setTwitter, setDiscord} = useSocialAccountContext()
+
+    const [walletTitle, setWalletTitle] = useState("");
+
+    useEffect(() => {
+        if(account.username){
+            setWalletTitle(account.username)
+        } else {
+            if (walletConnected){
+                setWalletTitle("")
+            } else {
+                setWalletTitle("Sign In")
+            }
+        }
+    },[account.username])
+
+
+    useEffect(() => {
+        if (walletConnected && publicKey) {
+            setAccount({...account, connected:true,pubkey:publicKey.toString()})
+
+
+            Api.getAccountId(publicKey.toString()).then((account_id) => {
+                Api.getAccount(account_id).then(({username, pay_dev, pfp_provider}) =>{
+                    setAccount({...account,id:account_id, username:username, pay_dev:pay_dev, pfp_provider:pfp_provider})
+                })
+
+                Api.getSocialAccount(account_id, Api.PlatformType.twitter).then(([id, username, handle, image_url]) => {
+                    setTwitter({
+                        id:id,
+                        username:username,
+                        handle:handle,
+                        image_url:image_url
+                    })
+                })
+
+                Api.getSocialAccount(account_id, Api.PlatformType.discord).then(([id, username, handle, image_url]) => {
+                    setDiscord({
+                        id:id,
+                        username:username,
+                        handle:handle,
+                        image_url:image_url
+                    })
+                })
+            })
+        } else {
+            setAccount({
+                id:'',
+                connected:false,
+                pubkey:'',
+                username:'',
+                pay_dev:false,
+                pfp_provider:''
+            })
+            setTwitter({
+                id:'',
+                username:'',
+                handle:'',
+                image_url:''
+            })
+            setDiscord({
+                id:'',
+                username:'',
+                handle:'',
+                image_url:''
+            })
+        }
+    }, [walletConnected, publicKey]);
+
 
     return (
         <header className="bg-transparent">
@@ -94,7 +199,7 @@ export default function Header() {
                 aria-label="Global"
             >
                 <div className="flex lg:flex-1">
-                    <a href="#" className="-m-1.5 p-1.5">
+                    <a href="./" className="-m-1.5 p-1.5">
                         <span className="sr-only">gib</span>
                         <img
                             className="h-8 w-auto"
@@ -181,12 +286,18 @@ export default function Header() {
                         </Transition>
                     </Popover> */}
 
-                    <a
-                        href={`${process.env.NEXT_PUBLIC_URL}/tip-link-setup`}
-                        className="text-sm font-semibold leading-6 mainTextColor"
-                    >
-                        Tip Link Setup
-                    </a>
+                    {links.map(({ title, href }, index) => {
+                        return (
+                            <a
+                                key={index}
+                                href={`${window.location.origin}/${href}`}
+                                className="text-sm font-semibold leading-6 mainTextColor"
+                            >
+                                {title}
+                            </a>
+                        );
+                    })}
+
                     {/* <a
                         href="#"
                         className="text-sm font-semibold leading-6 mainTextColor"
@@ -241,7 +352,9 @@ export default function Header() {
                     >
                         Log in <span aria-hidden="true">&rarr;</span>
                     </a> */}
-                    {/* <WalletMultiButton>Login</WalletMultiButton> */}
+                    <WalletMultiButton>
+                        {walletTitle}
+                    </WalletMultiButton>
                     <ThemeSwitcher />
                 </div>
             </nav>
@@ -298,12 +411,17 @@ export default function Header() {
                                     ))}
                                 </div> */}
                                 <div className="space-y-2 py-6">
-                                    <a
-                                        href={`${process.env.NEXT_PUBLIC_URL}/tip-link-setup`}
-                                        className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 mainTextColor hover:bg-gray-100 dark:hover:bg-gray-800"
-                                    >
-                                        Tip Link Setup
-                                    </a>
+                                    {links.map(({ title, href }, index) => {
+                                        return (
+                                            <a
+                                                key={index}
+                                                href={`${window.location.origin}/${href}`}
+                                                className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 mainTextColor hover:bg-gray-100 dark:hover:bg-gray-800"
+                                            >
+                                                {title}
+                                            </a>
+                                        );
+                                    })}
                                     {/* <a
                                         href="#"
                                         className="-mx-3 block rounded-lg px-3 py-2 text-base font-semibold leading-7 text-gray-900 hover:bg-gray-50"

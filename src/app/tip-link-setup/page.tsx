@@ -2,11 +2,12 @@
 
 //components
 import Divider from "../../components/Layout/Divider";
-import ButtonGroup from "../../components/Buttons/ButtonGroup";
+import {ButtonGroup} from "../../components/Buttons";
 import SingleActionModal from "../../components/Modals/SingleActionModal";
 import Textbox from "@/components/Textbox";
 import ObjectBg from "@/components/Layout/ObjectBg";
 import { toast } from "sonner";
+import {SocialVerifyGroup} from "@/components/Buttons";
 
 //utils
 import Util from "../../Util";
@@ -22,9 +23,14 @@ import { useWallet } from "@solana/wallet-adapter-react";
 //React/Next
 import React, { useEffect, useState } from "react";
 import Head from "next/head";
-
-require("@solana/wallet-adapter-react-ui/styles.css");
+import { useSession } from "next-auth/react";
 import { TwitterShareButton, XIcon } from "react-share";
+
+
+//style
+require("@solana/wallet-adapter-react-ui/styles.css");
+
+
 
 const default_choices = {
     wallet_address: "",
@@ -38,6 +44,8 @@ const no_prompt = [
 ];
 
 function TipSetup() {
+    const { data: session } = useSession();
+
     const { publicKey } = useWallet();
     const [state, setState] = useState(default_choices);
     const [shareLinkModalOpen, setShareLinkModalOpen] = useState(false);
@@ -72,14 +80,16 @@ function TipSetup() {
     }
 
     function getCleanedURL() {
-        return `${process.env.NEXT_PUBLIC_URL}/user/` + Util.cleanStringForURL(state.username);
+        return (
+            `${window.location.origin}/user/` + Util.stringToUrl(state.username)
+        );
     }
 
     function handleUsernameChange(e: any) {
         const { name, value } = e.target;
         setState({
             ...state,
-            username: Util.cleanStringForURL(value),
+            username: Util.stringToUrl(value),
         });
     }
 
@@ -101,6 +111,12 @@ function TipSetup() {
             wallet_address: wallet_address,
         });
     }, [publicKey]);
+
+    useEffect(() => {
+        console.log(session?.user?.image)
+
+        
+    }, [session?.user?.image]);
 
     return (
         <div>
@@ -140,7 +156,7 @@ function TipSetup() {
                 button_color={"gray"}
                 button_body={
                     <TwitterShareButton
-                        title={"gib me ur sol\n"}
+                        title={"gib me your sol\n"}
                         url={getCleanedURL()}
                         className="flex w-full flex-row items-center justify-center"
                     >
@@ -159,6 +175,7 @@ function TipSetup() {
                     <ObjectBg footer={`Link Preview: ${getCleanedURL()}`}>
                         <div className="flex justify-center">
                             <WalletMultiButton />
+                            <SocialVerifyGroup />
                         </div>
 
                         <Divider text={"or"} />

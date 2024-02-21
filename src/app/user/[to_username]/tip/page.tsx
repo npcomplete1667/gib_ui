@@ -1,31 +1,32 @@
 "use client";
 
 //components
-import Divider from "../../../components/Layout/Divider";
-import ButtonGroup from "../../../components/Buttons/ButtonGroup";
-import SingleActionModal from "../../../components/Modals/SingleActionModal";
+import Divider from "../../../../components/Layout/Divider";
+import { ButtonGroup } from "@/components/Buttons";
+import SingleActionModal from "../../../../components/Modals/SingleActionModal";
 import ObjectBg from "@/components/Layout/ObjectBg";
 
 //utils
-import Util from "../../../Util";
+import Util from "../../../../Util";
 import Api from "@/server-actions/Api";
+
+//context
+import { useAccountContext } from "@/context/AccountContext";
 
 //assets
 import { IoMdInformationCircleOutline } from "react-icons/io";
 
 //solana
 import { WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { WalletConnection } from "../../../hooks/WalletConnection";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { WalletConnection } from "../../../../hooks/WalletConnection";
 
 //React/Next
 import React, { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import Head from "next/head";
-import Image from "next/image";
 import { Tooltip } from "@geist-ui/core";
 
-require("@solana/wallet-adapter-react-ui/styles.css");
+
 import { toast } from "sonner";
 import Textbox from "@/components/Textbox";
 import Leaderboard from "@/components/Leaderboard";
@@ -39,9 +40,9 @@ export default function TipScreen() {
     const urlParams = useParams<{ to_username: string }>();
     const [from_username, setFromUsername] = useState("");
     const to_username = urlParams.to_username;
-    const { connected, publicKey } = useWallet();
     const { sendSol, getSolBalance } = WalletConnection();
     const [disableTextbox, setDisableTextbox] = useState(false);
+    const {account} = useAccountContext();
 
     const [customAmount, setCustomAmount] = useState(
         tip_amounts[amountIdx].toString()
@@ -71,8 +72,8 @@ export default function TipScreen() {
 
     useEffect(() => {
         updateLeaderboards();
-        if (connected) {
-            Api.getUsernameFromPubkey(publicKey!.toString()).then((result) => {
+        if (account.connected) {
+            Api.getUsername(account.pubkey).then((result) => {
                 setFromUsername(result);
                 if (result != "") {
                     setDisableTextbox(true);
@@ -82,11 +83,11 @@ export default function TipScreen() {
             setFromUsername("");
             setDisableTextbox(false);
         }
-    }, [connected]);
+    }, [account.connected]);
 
     function handleUsernameChange(e: any) {
         const { value } = e.target;
-        setFromUsername(Util.cleanStringForURL(value));
+        setFromUsername(Util.stringToUrl(value));
     }
 
     function handleCustomAmount(e: any) {
@@ -95,7 +96,7 @@ export default function TipScreen() {
     }
 
     async function handleMaxButtonClick() {
-        const wallet_balance: number = await getSolBalance();
+        const wallet_balance: number = await Util.getWalletBalance();
         if (wallet_balance > 0.1) {
             const max_amount = (wallet_balance - 0.1).toFixed(2);
             setCustomAmount(max_amount.toString());
@@ -105,7 +106,7 @@ export default function TipScreen() {
     }
 
     async function sendTransactionHandler() {
-        if (!connected) {
+        if (!account.connected) {
             toast.error("Wallet Not Connected");
             return;
         }
@@ -123,18 +124,18 @@ export default function TipScreen() {
             if (txn_hash) {
                 Util.transactionToast(txn_hash);
                 Api.saveTransaction(
-                    txn_hash,
                     Api.TransactionType.Tip,
-                    publicKey!.toString(),
-                    to_username,
-                    `wallet: ${publicKey!.toString()} tips user: ${to_username}`,
+                    await Api.getPubkey(to_username),
                     "So11111111111111111111111111111111111111112",
-                    tip_amount
+                    tip_amount,
+                    `wallet: ${account.pubkey} tips user: ${to_username}`,
+                    account.pubkey,
+                    txn_hash
                 );
-                if (from_username !== "" && publicKey) {
+                if (from_username !== "" && account.connected) {
                     Api.saveUser(
                         from_username,
-                        publicKey.toString(),
+                        account.pubkey,
                         true,
                         true
                     );
@@ -181,7 +182,7 @@ export default function TipScreen() {
                                         }
                                         placement="right"
                                     >
-                                        <IoMdInformationCircleOutline className='h-5 w-5'/>
+                                        <IoMdInformationCircleOutline className="h-5 w-5" />
                                     </Tooltip>
                                 </div>
                             }

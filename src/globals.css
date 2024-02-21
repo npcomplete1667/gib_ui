@@ -2,6 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
+.phantom-button {
+  height: inherit !important;
+  padding: inherit !important;
+}
+
+.phantom-button:hover {
+  background-color: transparent !important;
+}d 
+
+.phantom-button:hover > .wallet-adapter-button-start-icon > svg,
+.phantom-button:hover > span {
+  color: rgb(243 244 246) !important;
+}
+
 @layer base{
   :root[class="light"] {
     --bg-color: 255 255 255;
@@ -14,5 +28,4 @@
     --object-bg-color: 17 24 39;
     --main-text-color: 156 163 175; /*gray-400*/
   }
-
 }

@@ -26,13 +26,15 @@ function ButtonGroup({
                     //beginning item
                     return (
                         <button
+                            key={index}
                             type="button"
                             onClick={() => handler(index)}
                             className={classNames(
-                                selected == index ? 
-                                "bg-gray-100 dark:bg-white/10" : 
-                                "bg-white dark:bg-black",
-                                "relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10")}
+                                selected == index
+                                    ? "bg-gray-100 dark:bg-white/10"
+                                    : "bg-white dark:bg-black",
+                                "relative inline-flex items-center rounded-l-md px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10"
+                            )}
                         >
                             {text}
                         </button>
@@ -41,12 +43,15 @@ function ButtonGroup({
                     // end item
                     return (
                         <button
+                            key={index}
                             type="button"
                             onClick={() => handler(index)}
                             className={classNames(
-                                selected == index ? 
-                                "bg-gray-150 dark: dark:bg-white/10" : "bg-white dark:bg-black",
-                                "relative -ml-px inline-flex items-center rounded-r-md  px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10")}
+                                selected == index
+                                    ? "bg-gray-150 dark: dark:bg-white/10"
+                                    : "bg-white dark:bg-black",
+                                "relative -ml-px inline-flex items-center rounded-r-md  px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10"
+                            )}
                         >
                             {text}
                         </button>
@@ -55,13 +60,15 @@ function ButtonGroup({
                     //middle items
                     return (
                         <button
+                            key={index}
                             type="button"
                             onClick={() => handler(index)}
                             className={classNames(
-                                selected == index ? 
-                                "bg-gray-100 dark:bg-white/10" : 
-                                "bg-white dark:bg-black",
-                                "relative -ml-px inline-flex items-center px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10")}
+                                selected == index
+                                    ? "bg-gray-100 dark:bg-white/10"
+                                    : "bg-white dark:bg-black",
+                                "relative -ml-px inline-flex items-center px-3 py-2 text-sm font-semibold text-gray-900 dark:text-white ring-1 ring-inset ring-gray-300 hover:bg-white/20 focus:z-10"
+                            )}
                         >
                             {text}
                         </button>

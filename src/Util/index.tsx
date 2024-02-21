@@ -25,7 +25,7 @@ const urlToNumber = (input:string) : number | undefined => {
     return parseFloat(dashSplit.join("."))
 }
 
-function classNames(...classes) {
+function classNames(...classes:any[]) {
     return classes.filter(Boolean).join(" ");
 }
 

@@ -225,7 +225,10 @@ export default function RequestPage() {
                                 <div>
                                     {selectedPeople &&
                                         selectedPeople.map((person) => (
-                                            <div className="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200">
+                                            <div
+                                                className="inline-flex items-center gap-x-1.5 rounded-full px-2 py-1 text-xs font-medium text-gray-900 ring-1 ring-inset ring-gray-200"
+                                                key={person.name}
+                                            >
                                                 <a
                                                     href={person.href}
                                                     className="inline-flex items-center gap-x-1.5"
@@ -290,7 +293,10 @@ export default function RequestPage() {
                                 <div>
                                     {selectedPeople &&
                                         selectedPeople.map((person) => (
-                                            <div className="flex flex-row w-full place-content-between">
+                                            <div
+                                                className="flex flex-row w-full place-content-between"
+                                                key={person.name}
+                                            >
                                                 <a
                                                     href={person.href}
                                                     className="inline-flex items-center gap-x-1.5"

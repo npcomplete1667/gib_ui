@@ -118,7 +118,7 @@ export default function FulfillRequestPage() {
             <div className={"py-6 sm:py-8 lg:py-12"}>
                 <div className="mx-auto max-w-screen-2xl px-4 md:px-8">
                     <h2 className="mb-4 text-center text-2xl font-bold text-gray-800 dark:text-gray-300 md:mb-8 lg:text-3xl">
-                        Completing {to_username}'s Payment Request
+                        Completing {to_username}&apos;s Payment Request
                     </h2>
 
                     <ObjectBg>

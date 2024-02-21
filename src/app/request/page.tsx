@@ -49,7 +49,7 @@ interface person {
     discord_id: string | undefined;
 }
 
-export default function makeRequestPage() {
+export default function RequestPage() {
     const { account } = useAccountContext();
     const [from_username, setFromUsername] = useState("");
 
